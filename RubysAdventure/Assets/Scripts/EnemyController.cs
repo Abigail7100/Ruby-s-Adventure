@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    //==========RubyController======
+    private PlayerController rubycontroller;
     // Public variables
     public float speed;
     public bool vertical;
@@ -24,6 +26,17 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         timer = changeTime;
 
+        //Check if game engine can find ruby
+        GameObject rubyControllerObject = GameObject.FindWithTag("RubyController");
+        if(rubyControllerObject != null)
+        {
+            rubycontroller = rubyControllerObject.GetComponent<PlayerController>();
+            print("Found the RubyController Script!");
+        }
+        if (rubycontroller ==null)
+        {
+            print("Cannot find GameController Script!");
+        }
     }
 
 
@@ -95,6 +108,11 @@ public class EnemyController : MonoBehaviour
         GetComponent<Rigidbody2D>().simulated = false;
         animator.SetTrigger("Fixed");
         smokeEffect.Stop();
+
+        if (rubycontroller != null)
+        {
+            rubycontroller.ChangeScore(1);
+        }
     }
 
 

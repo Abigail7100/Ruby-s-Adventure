@@ -2,10 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    //==========Tracking Robots===========
+    public int score;
+    public GameObject gameOverText;
+    public GameObject gameWonText;
+    // Creating boolean for game over
+    public bool gameOver;
+    //new audio changes
+    public AudioClip youLose;
+    public AudioClip youWin;
+    //=========Sounds=========
+    AudioSource audioSource;
     // Variables related to player character movement
     public InputAction MoveAction;
     Rigidbody2D rigidbody2d;
@@ -42,6 +54,11 @@ public class PlayerController : MonoBehaviour
 
 
         currentHealth = maxHealth;
+
+        //game starts as normal
+        gameOver = false;
+        //========Audio=======
+        audioSource = GetComponent<AudioSource>();
     }
     // Update is called once per frame
     void Update()
@@ -85,6 +102,38 @@ public class PlayerController : MonoBehaviour
                 NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
             }
         }
+
+    //=========Game Over==========
+    if(currentHealth == 0)
+        {
+            speed = 0;
+            gameOverText.SetActive(true);
+            //boolean
+            gameOver = true;
+            //audio
+            audioSource.PlayOneShot(youLose);
+        }
+    //============Game Won=========
+    //Score is amount of robots in current scene
+    if(score==3)
+        {
+            speed = 0;
+            gameWonText.SetActive(true);
+            //boolean
+            gameOver = true;
+            //audio
+            audioSource.PlayOneShot(youWin);
+        }
+    //checking if R is pressed
+    if (Input.GetKey(KeyCode.R))
+        {
+            //boolean
+            if(gameOver==true)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+        }
+
     }
 
 
@@ -119,8 +168,21 @@ public class PlayerController : MonoBehaviour
         //Health pickup particle system
         Instantiate(healthPickupParticles, transform.position + Vector3.up * 0.5f, Quaternion.identity);
     }
+    //========Speed Potion=========
+    public void ChangeSpeed(int speedAmount)
+    {
+        speed = speed + speedAmount;
+    }
+    //========Score============
+    public void ChangeScore(int scoreAmount)
+    {
+        score = score + scoreAmount;
+    }
 
-
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
 
     void Launch()
     {
